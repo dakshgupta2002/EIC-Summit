@@ -9,8 +9,7 @@ import Events from "./Components/Events/Events";
 import Error from "./Components/pages/Error";
 function App() {
 
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
-  const [user, setUser] = React.useState({});
+  const [user, setUser] = React.useState(sessionStorage.getItem("user"));
 
   return (
     <>
@@ -19,17 +18,17 @@ function App() {
         <Routes>
 
           <Route exact path="/" element={<>
-            {isLoggedIn ? <> <Header user={user} /> <Home/> <Footer /> </> : <Error />}
+            {user ? <> <Header user={user} /> <Home/> <Footer /> </> : <Error />}
           </>} />
           <Route exact path="events" element={<>
-            {isLoggedIn ? <Events user={user} /> : <Error />}
+            {user ? <Events user={user} /> : <Error />}
           </>} />
 
           <Route exact path="/login" element={
-            <Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+            <Login setuser={setUser}/>} />
             
           <Route exact path="/register" element={
-            <Register setIsLoggedIn={setIsLoggedIn} setUser={setUser} />
+            <Register setuser={setUser} />
           } />
 
           <Route path="*" element={
