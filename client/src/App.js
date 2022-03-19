@@ -7,9 +7,11 @@ import Login from "./Components/User/Login";
 import Register from "./Components/User/Register";
 import Events from "./Components/Events/Events";
 import Error from "./Components/pages/Error";
+import Verify from "./Components/User/Verify";
+import Create from "./Components/User/Create";
+
 function App() {
 
-  const [user, setUser] = React.useState(sessionStorage.getItem("user"));
 
   return (
     <>
@@ -17,23 +19,20 @@ function App() {
       <Router>
         <Routes>
 
-          <Route exact path="/" element={<>
-            {user ? <> <Header user={user} /> <Home/> <Footer /> </> : <Error />}
-          </>} />
+          <Route exact path="/" element={<Home/> } />
           <Route exact path="events" element={<>
-            {user ? <Events user={user} /> : <Error />}
+            {sessionStorage.getItem("user") ? <Events /> : <Error />}
           </>} />
 
           <Route exact path="/login" element={
-            <Login setuser={setUser}/>} />
+            <Login/>} />
             
-          <Route exact path="/register" element={
-            <Register setuser={setUser} />
-          } />
+          <Route path="/register" element={<Register/>} />
+          <Route path = "/register/verify" element= {<Verify/>} />
+          <Route path="/register/create" element = { <Create/>} />
 
-          <Route path="*" element={
-            <Error/>
-          } />
+          
+          <Route path="*" element={<Error/>} />
 
         </Routes>
 

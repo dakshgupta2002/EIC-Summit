@@ -1,8 +1,24 @@
-import Axios from 'axios';
+import { axiosRequest } from "./AxiosRequest";
 
-const UserLogin = async (data) => {
-    const res = await  Axios.post('http://localhost:3333/user/login', data)
-    console.log(res.json())
+export const UserRegister = async (data) => {
+    const res = await axiosRequest("POST", "user/register", {
+        "email": data
+    });
+    return res;
 }
 
-export default UserLogin;
+export const UserVerify = async (data) => {
+    const res = await axiosRequest("POST", "user/register/verify", data);
+    return res;
+}
+
+export const UserCreate = async (data) => {
+    const res = await axiosRequest("POST", "user/register/create", data);
+    return res;
+}
+
+export const UserLogin = async (data) => {
+    const res = await axiosRequest("POST", "user/login", data);
+    return res;
+}
+

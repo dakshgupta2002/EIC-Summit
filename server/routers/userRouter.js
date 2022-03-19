@@ -9,24 +9,36 @@ import jwt from 'jsonwebtoken';
 const userRouter = Router();
 
 userRouter.route('/register')
+	.all((req, res, next) => {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "X-Requested-With");
+		res.header("Content-Type", "application/json");
+		next();
+	})
 	.post(async (req, res) => {
 		//first save user email in userVerify 
 		//send otp and if otp verified, then save user email 
-
 		const { email } = req.body;
 		const exists = await User.findOne({ email: email }).exec();
 
-		if (exists != null) {
-			res.status(409).send("User already exists");
+
+		if (exists !== null) {
+			res.status(409).json({
+				"msg": "User already exists",
+				"status": 409
+			});
 			return;
 		}
 
-        //check if already an otp has been sent 
-        const oldUserVerify = await UserVerify.findOne({ email: email }).exec();
-        if (oldUserVerify != null) {
-            res.status(409).send("OTP already sent");
-            return;
-        }
+		//check if already an otp has been sent 
+		const oldUserVerify = await UserVerify.findOne({ email: email }).exec();
+		if (oldUserVerify !== null) {
+			res.status(409).json({
+				"msg": "OTP already sent",
+				"status": 409
+			});
+			return;
+		}
 		//proceed to create temporary user account 
 
 		// 1) Create a new document 
@@ -38,16 +50,24 @@ userRouter.route('/register')
 		const auth = await Auth(email, process.env.COPMPANY_NAME);
 
 		// 3) encrypt the otp and store in database
-        const otp = auth.OTP;
+		const otp = auth.OTP;
 		userVerify.otp = otp;
 
 		userVerify.save();
-
 		// 4) return to the user and wait for the otp to be entered
-		res.json(email);
+		return res.status(200).json({
+			"msg": "OTP sent",
+			"status": 200
+		});
 	})
 
 userRouter.route('/register/verify')
+	.all((req, res, next) => {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "X-Requested-With");
+		res.header("Content-Type", "application/json");
+		next();
+	})
 	.post(async (req, res) => {
 
 		// accept otp from the user
@@ -56,34 +76,48 @@ userRouter.route('/register/verify')
 		//check if user exists in temporary db
 		const userVerify = await UserVerify.findOne({ email: email }).exec();
 		if (userVerify == null) {
-			res.status(404).send("User not found");
+			res.status(404).json({
+				"msg": "User not found"
+			});
 			return;
 		}
 
 		//check if otp is correct
 		if (otp !== userVerify.otp) {
-			res.status(401).send("OTP is incorrect");
+			res.status(401).json({ "msg": "OTP is incorrect" });
 			return;
 		}
 
 		//verify and create user account
-        userVerify.verified = true;
-        userVerify.save();
-		return res.json(email);
+		userVerify.verified = true;
+		userVerify.save();
+		return res.json({
+			"msg": "OTP verified",
+			"status": 200
+		});
 	});
 
 
 userRouter.route("/register/create")
+	.all((req, res, next) => {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "X-Requested-With");
+		res.header("Content-Type", "application/json");
+		next();
+	})
 	.post(async (req, res) => {
 		const { name, email, password, institute } = req.body;
-        //hash the password 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        //check if this email is verified 
-        const userVerify = await UserVerify.findOne({ email: email }).exec();
-        if (userVerify == null || userVerify.verified===false) {
-            res.status(401).send("User OTP not verified");
-            return;
-        }
+		//check if this email is verified 
+		const userVerify = await UserVerify.findOne({ email: email }).exec();
+		if (userVerify === null || userVerify.verified === false) {
+			res.status(401).json({
+				"msg": "User OTP not verified"
+			});
+			return;
+		}
+
+		//hash the password 
+		const hashedPassword = bcrypt.hashSync(password, 10);
 
 		const user = new User({
 			name: name,
@@ -97,24 +131,40 @@ userRouter.route("/register/create")
 
 		user.save();
 
-		res.json(user);
+		res.status(200).json({
+			user,
+			"status": 200
+		});
 	})
 
 userRouter.route("/login")
-    .post(async (req, res) => {
-        const { email, password } = req.body;
-        const userFound = await User.findOne({ email: email }).exec();
-        if (userFound == null) {
-            return res.status(401).send("User not found");
-        }
-        if (password !== userFound.password){
-            return res.status(401).send("Password incorrect");
-        }
-        const token = jwt.sign({ user_id: userFound._id, email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        userFound.token = token;
-        userFound.save();
+	.all((req, res, next) => {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "X-Requested-With");
+		res.header("Content-Type", "application/json");
+		next();
+	})
+	.post(async (req, res) => {
+		const { email, password } = req.body;
+		const userFound = await User.findOne({ email: email }).exec();
+		if (userFound === null) {
+			return res.status(401).json({
+				"msg": "User not found"
+			});
+		}
+		if (!bcrypt.compareSync(password, userFound.password)) {
+			return res.status(401).json({
+				"msg": "Password incorrect"
+			});
+		}
+		const token = jwt.sign({ user_id: userFound._id, email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+		userFound.token = token;
+		userFound.save();
 
-        return res.json(userFound);
+		return res.json({
+			userFound,
+			"status": 200
+		});
 
-    });
+	});
 export default userRouter;

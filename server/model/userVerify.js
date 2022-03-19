@@ -9,8 +9,7 @@ const userVerifySchema = new Schema({
     },
     
     otp:{
-        type: String,
-        required: true
+        type: String
     },
     verified: {
         type: Boolean,

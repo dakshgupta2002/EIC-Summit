@@ -13,7 +13,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import UserLogin from '../../Api/User';
+import {UserLogin} from '../../Api/User';
 
 function Copyright(props) {
   return (
@@ -43,11 +43,18 @@ export default function Login() {
         const email = data.get('email');
         const password = data.get('password')
                 
-        UserLogin({
+        const res = await UserLogin({
             email,
             password
-        })
-        navigate('/');        
+        });
+        if(res.status === 200){
+            sessionStorage.setItem('user', res.userFound.token);
+            navigate('/');
+        }else{
+            alert(res.msg);
+        }
+        
+      
     }
 
   return (

@@ -2,8 +2,10 @@ import 'dotenv/config'
 import express from 'express';
 import './config/db.js';
 import { auth } from './middlewares/auth.js';
+import cors from 'cors';
 
 const app = express();
+app.options('*', cors());
 app.use(express.json());
 
 //register or login a new user

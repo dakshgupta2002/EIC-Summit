@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,7 +13,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { UserRegister } from '../../Api/User';
+import { UserCreate } from '../../Api/User';
 
 function Copyright(props) {
     return (
@@ -34,30 +34,41 @@ const theme = createTheme({
     },
 });
 
-export default function Register() {
+export default function Create() {
 
     let navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const email = data.get('email');
+        const name = data.get('name');
+        const password = data.get('password');
+        const confirmPassword = data.get('confirmPassword');
+        const institute = data.get('institute');
 
-        const res = await UserRegister(email);
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+        const res = await UserCreate({
+            name,
+            password,
+            email: sessionStorage.getItem('email'),
+            institute
+        });
         if (res.status === 200) {
-            toast.success("Verification link sent to your email");
-            navigate('verify');
-            sessionStorage.setItem('email', email);
+            toast.success("User has been created");
+            sessionStorage.setItem('user', res.user);
+            navigate('/');
         } else {
             toast.error("Email already exists");
         }
-        
+
     }
 
     return (
         <ThemeProvider theme={theme}>
             <ToastContainer />
-            <Outlet/>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -75,18 +86,49 @@ export default function Register() {
                         Create a new account
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                        
+
 
                         <TextField
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
+                            id="name"
+                            label="Full Name"
+                            name="name"
                             autoFocus
                         />
+
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="password"
+                            label="Password"
+                            name="password"
+                            autoFocus
+                        />
+
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="confirmPassword"
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            autoFocus
+                        />
+
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="institute"
+                            label="Institute"
+                            name="institute"
+                            autoFocus
+                        />
+
+
                         <Button
                             type="submit"
                             fullWidth
