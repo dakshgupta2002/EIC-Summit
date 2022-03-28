@@ -22,3 +22,18 @@ export const UserLogin = async (data) => {
     return res;
 }
 
+export const isAdmin = async (token) => {
+    const res = await axiosRequest("POST", "user/isAdmin", {
+        token: token
+    });
+    if (res.status===200) {
+        return true;
+    }else return false;
+}
+
+export const removeAccount = async (token) => {
+    const res = await axiosRequest("POST", "user/removeAccount",{
+        token
+    });
+    return res;
+}

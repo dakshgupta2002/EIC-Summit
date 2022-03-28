@@ -48,7 +48,7 @@ export default function Login() {
             password
         });
         if(res.status === 200){
-            sessionStorage.setItem('user', res.userFound.token);
+            localStorage.setItem('token', res.userFound.token);
             navigate('/');
         }else{
             alert(res.msg);

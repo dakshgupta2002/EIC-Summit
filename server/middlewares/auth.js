@@ -4,7 +4,7 @@ import User from '../model/userModel.js';
 
 export const auth = (req, res, next) =>{
     const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
+    req.body.token || req.query.token || req.headers.authorization;
   if (!token) {
     return res.status(403).send("A token is required for authentication");
   }
@@ -17,12 +17,12 @@ export const auth = (req, res, next) =>{
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
-  return next();
-
+  next();
 }
 
-export const isAdmin = (req, res, next) => {
-  const user = User.findOne({ _id: req.user._id });
+export const isAdmin = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.user._id });
+  console.log(user);
   if (req.user.admin !== true) {
     return false;
   }

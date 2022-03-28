@@ -17,7 +17,7 @@ app.use(auth);
 
 //create events, update events, delete events 
 import eventRouter from './routers/eventRouter.js';
-app.use("/event", eventRouter)
+app.use("/events", eventRouter)
 
 app.listen('3333', () => {
     console.log("Hello Backend");

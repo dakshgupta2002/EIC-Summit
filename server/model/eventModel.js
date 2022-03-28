@@ -39,8 +39,7 @@ const EventSchema = new Schema({
         default: 0
     },
     qrscan:{
-        type: String,
-        required: true
+        type: String
     }
 }, {
     timestamps: true

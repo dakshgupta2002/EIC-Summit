@@ -12,8 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
+import { removeAccount } from '../Api/User';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['About', 'Events', 'Sponsers', 'Contact'];
 
 export default function Header() {
   const navigate = useNavigate();
@@ -36,8 +37,14 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
     navigate("/login");
+  }
+  const handleRemoveAccount = async () => {
+    const res = await removeAccount(localStorage.getItem('token'));
+    if (res.status === 200) { 
+      handleLogout();
+    }
   }
 
   return (
@@ -50,7 +57,7 @@ export default function Header() {
             component="div"
             sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            LOGO
+            E-Summit
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -83,8 +90,8 @@ export default function Header() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page} onClick={ handleCloseNavMenu}>
+                  <Typography onClick={(e) =>navigate(`/${page.toLowerCase()}`)} textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -95,14 +102,14 @@ export default function Header() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
           >
-            LOGO
+            E-Summit
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
+                onClick={(e) => navigate(`/${page.toLowerCase()}`)} 
               >
                 {page}
               </Button>
@@ -134,6 +141,9 @@ export default function Header() {
 
               <MenuItem onClick={handleLogout}>
                 <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleRemoveAccount}>
+                <Typography color={"red"} textAlign="center">Remove Account</Typography>
               </MenuItem>
             </Menu>
           </Box>

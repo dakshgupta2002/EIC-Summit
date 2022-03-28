@@ -23,7 +23,13 @@ const userSchema = new Schema({
         type: String
     },
     admin: {
+        type: Boolean,
         default: false 
+    },
+    events: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Event',
+        default: []
     }
 
 },

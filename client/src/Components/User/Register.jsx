@@ -47,7 +47,7 @@ export default function Register() {
         if (res.status === 200) {
             toast.success("Verification link sent to your email");
             navigate('verify');
-            sessionStorage.setItem('email', email);
+            localStorage.setItem('email', email);
         } else {
             toast.error("Email already exists");
         }

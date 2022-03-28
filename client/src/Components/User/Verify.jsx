@@ -12,11 +12,11 @@ export default function Verify() {
         event.preventDefault();
         const res = await UserVerify({
             "otp": OTP,
-            "email": sessionStorage.getItem('email')
+            "email": localStorage.getItem('email')
         })
 
         if (res.status === 200) {
-            sessionStorage.setItem('verified', true);
+            localStorage.setItem('verified', true);
             navigate('/register/create');
         } else {
             alert("Invalid OTP");

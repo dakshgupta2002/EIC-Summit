@@ -7,7 +7,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (sessionStorage.getItem('user') === null) {
+    if (localStorage.getItem('token') === null) {
       navigate('/login')
     }
   }, [])
@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <Header />
       HOME
-      {sessionStorage.getItem('token')}
+      {localStorage.getItem('token')}
       <Footer />
     </>
 

@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
@@ -13,7 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { UserCreate } from '../../Api/User';
+import { CreateEvent, getAllEvents } from '../../Api/Event';
 
 function Copyright(props) {
     return (
@@ -30,39 +29,18 @@ function Copyright(props) {
 
 const theme = createTheme({
     palette: {
-        mode: 'dark',
+        mode: 'light',
     },
 });
 
 export default function Create() {
-
-    let navigate = useNavigate();
+    // let navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const name = data.get('name');
-        const password = data.get('password');
-        const confirmPassword = data.get('confirmPassword');
-        const institute = data.get('institute');
-
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-        const res = await UserCreate({
-            name,
-            password,
-            email: localStorage.getItem('email'),
-            institute
-        });
-        if (res.status === 200) {
-            toast.success("User has been created");
-            localStorage.setItem('token', res.user.token);
-            navigate('/');
-        } else {
-            toast.error("Email already exists");
-        }
+        
+        const res = await CreateEvent(data);
 
     }
 
@@ -83,51 +61,77 @@ export default function Create() {
                         <LockIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Create a new account
+                        Create a new event
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-
-
                         <TextField
                             margin="normal"
                             required
                             fullWidth
                             id="name"
-                            label="Full Name"
+                            label="Event Name"
                             name="name"
                             autoFocus
                         />
-
                         <TextField
                             margin="normal"
-                            required
                             fullWidth
-                            id="password"
-                            label="Password"
-                            name="password"
+                            required
+                            type="number"
+                            id="fees"
+                            label="Fees"
+                            name="fees"
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="description"
+                            label="description"
+                            name="description"
                             autoFocus
                         />
 
                         <TextField
                             margin="normal"
-                            required
-                            fullWidth
-                            id="confirmPassword"
-                            label="Confirm Password"
-                            name="confirmPassword"
-                            autoFocus
+                            id="startDate"
+                            label="Start Date"
+                            type="date"
+                            defaultValue="2022-12-25"
+                            sx={{ width: 220 }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
                         />
-
                         <TextField
                             margin="normal"
-                            required
+                            id="endDate"
+                            label="End Date"
+                            type="date"
+                            defaultValue="2022-12-25"
+                            sx={{ width: 220 }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                        <TextField
+                            margin="normal"
                             fullWidth
-                            id="institute"
-                            label="Institute"
-                            name="institute"
+                            id="location"
+                            label="Location of Event"
+                            name="location"
                             autoFocus
                         />
-
+                        <Button
+                            variant="contained"
+                            component="label"
+                        >
+                            Upload File
+                            <input
+                                type="file"
+                                hidden
+                            />
+                        </Button>
 
                         <Button
                             type="submit"
@@ -135,17 +139,8 @@ export default function Create() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Verify Email
+                            Create Event
                         </Button>
-
-
-                        <Grid container>
-                            <Grid item>
-                                <Link href="/login" variant="body2">
-                                    {"Already have an account? Sign In"}
-                                </Link>
-                            </Grid>
-                        </Grid>
 
 
                     </Box>

@@ -4,17 +4,17 @@ import bcrypt from "bcrypt";
 import { Auth } from "two-step-auth"
 import User from "../model/userModel.js";
 import UserVerify from '../model/userVerify.js';
+import { generateToken } from '../middlewares/jwt.js';
 import jwt from 'jsonwebtoken';
-
 const userRouter = Router();
-
-userRouter.route('/register')
+userRouter.route('*')
 	.all((req, res, next) => {
 		res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Headers", "X-Requested-With");
 		res.header("Content-Type", "application/json");
 		next();
 	})
+userRouter.route('/register')
 	.post(async (req, res) => {
 		//first save user email in userVerify 
 		//send otp and if otp verified, then save user email 
@@ -62,12 +62,6 @@ userRouter.route('/register')
 	})
 
 userRouter.route('/register/verify')
-	.all((req, res, next) => {
-		res.header("Access-Control-Allow-Origin", "*");
-		res.header("Access-Control-Allow-Headers", "X-Requested-With");
-		res.header("Content-Type", "application/json");
-		next();
-	})
 	.post(async (req, res) => {
 
 		// accept otp from the user
@@ -99,12 +93,6 @@ userRouter.route('/register/verify')
 
 
 userRouter.route("/register/create")
-	.all((req, res, next) => {
-		res.header("Access-Control-Allow-Origin", "*");
-		res.header("Access-Control-Allow-Headers", "X-Requested-With");
-		res.header("Content-Type", "application/json");
-		next();
-	})
 	.post(async (req, res) => {
 		const { name, email, password, institute } = req.body;
 		//check if this email is verified 
@@ -126,7 +114,7 @@ userRouter.route("/register/create")
 			institute: institute
 		});
 
-		const token = jwt.sign({ user_id: user._id, email: email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+		const token = generateToken(user._id);
 		user.token = token;
 
 		user.save();
@@ -138,12 +126,6 @@ userRouter.route("/register/create")
 	})
 
 userRouter.route("/login")
-	.all((req, res, next) => {
-		res.header("Access-Control-Allow-Origin", "*");
-		res.header("Access-Control-Allow-Headers", "X-Requested-With");
-		res.header("Content-Type", "application/json");
-		next();
-	})
 	.post(async (req, res) => {
 		const { email, password } = req.body;
 		const userFound = await User.findOne({ email: email }).exec();
@@ -157,7 +139,7 @@ userRouter.route("/login")
 				"msg": "Password incorrect"
 			});
 		}
-		const token = jwt.sign({ userFound }, process.env.JWT_SECRET, { expiresIn: Math.floor(Date.now() / 1000) + (60 * 60) });
+		const token = generateToken(userFound._id);
 		userFound.token = token;
 		userFound.save();
 
@@ -167,4 +149,40 @@ userRouter.route("/login")
 		});
 
 	});
+
+userRouter.route("/removeAccount")
+	.post(async (req, res) => {
+		const token = req.body.token || req.query.token || req.headers.authorization;
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+		//have to delete in verify by email 
+		const user = await User.findById(decoded.data);
+
+		UserVerify.deleteOne({ email: user.email }).exec();
+		User.deleteOne({ _id: decoded.data }).exec();
+		return res.json({
+			"msg": "User account deleted",
+			"status": 200
+		});
+
+	})
+
+userRouter.route('/isAdmin')
+	.post(async (req, res) => {
+		const token = req.body.token || req.query.token || req.headers.authorization;
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		const user = await User.findById(decoded.data);
+		if (user.admin) {
+			return res.json({
+				"msg": "User is admin",
+				"status": 200
+			});
+		} else {
+			return res.json({
+				"msg": "User is not admin",
+				"status": 401
+			})
+		}
+	})
+
 export default userRouter;
