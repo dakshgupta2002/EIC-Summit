@@ -19,6 +19,10 @@ app.use(auth);
 import eventRouter from './routers/eventRouter.js';
 app.use("/events", eventRouter)
 
+//get and post the comments of an event using its id
+import commentRouter from './routers/commentRouter.js';
+app.use("/events/comments", commentRouter);
+
 app.listen('3333', () => {
     console.log("Hello Backend");
 });

@@ -11,7 +11,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRegister } from '../../Api/User';
 
@@ -56,7 +56,6 @@ export default function Register() {
 
     return (
         <ThemeProvider theme={theme}>
-            <ToastContainer />
             <Outlet/>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />

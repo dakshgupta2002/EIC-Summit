@@ -14,16 +14,15 @@ export const auth = (req, res, next) =>{
     req.user = decoded; 
     // decoded info from jwt is now added to request 
     //it is now available to all the routes
+    next();
   } catch (err) {
     return res.status(401).send("Invalid Token");
   }
-  next();
 }
 
 export const isAdmin = async (req, res, next) => {
-  const user = await User.findOne({ _id: req.user._id });
-  console.log(user);
-  if (req.user.admin !== true) {
+  const user = await User.findById(req.user.data).exec();
+  if (user.admin !== true) {
     return false;
   }
   return true;

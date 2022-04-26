@@ -7,14 +7,10 @@ export default function Error() {
   const navigate = useNavigate();
   return (
     <div>
-      <h1>Login to view this page</h1>
-      <Button
-        onClick={() => {navigate("/login")}} 
-      >
-        Login
-      </Button>
-
-
+      <img src="https://i.imgur.com/qIufhof.png" alt="404"/>
+            <div id="info">
+                <h3>This page could not be found</h3>
+            </div>
     </div>
   )
 }

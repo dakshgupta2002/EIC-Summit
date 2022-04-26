@@ -1,5 +1,5 @@
 import * as React from 'react';
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,9 +10,9 @@ import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CreateEvent, getAllEvents } from '../../Api/Event';
+import { CreateEvent } from '../../Api/Event';
 
 function Copyright(props) {
     return (
@@ -34,19 +34,23 @@ const theme = createTheme({
 });
 
 export default function Create() {
-    // let navigate = useNavigate();
+    let navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         
         const res = await CreateEvent(data);
-
+        if (res){
+            toast.success("Event Created Successfully");
+            setTimeout(() => {
+                navigate("/events");
+            }, 100)
+        }
     }
 
     return (
         <ThemeProvider theme={theme}>
-            <ToastContainer />
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -95,6 +99,7 @@ export default function Create() {
                         <TextField
                             margin="normal"
                             id="startDate"
+                            name="startDate"
                             label="Start Date"
                             type="date"
                             defaultValue="2022-12-25"
@@ -106,6 +111,7 @@ export default function Create() {
                         <TextField
                             margin="normal"
                             id="endDate"
+                            name="endDate"
                             label="End Date"
                             type="date"
                             defaultValue="2022-12-25"

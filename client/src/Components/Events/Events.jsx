@@ -1,39 +1,56 @@
 import React from 'react'
 import SingleEvent from './SingleEvent'
-import { getAllEvents } from '../../Api/Event'
+import { getAllEvents, getMyEvents } from '../../Api/Event'
 import { Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import Header from '../Header'
 
 export default function Events() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [events, setEvents] = React.useState([])
+
   React.useEffect(() => {
     if (localStorage.getItem('token') === null) {
       navigate("/")
     }
-    getAllEvents().then(res => {
-      setEvents(res.data)
-    })
-}, [])
+
+    if(location.pathname==="/myEvents"){
+      getMyEvents().then(res => {
+        setEvents(res)
+      })
+    }else{
+      getAllEvents().then(res => {
+        setEvents(res)
+      })
+    }
+  }, [location.pathname])
 
   return (
     <>
+      <Header/>
       <h1>EVENTS</h1>
       <br />
       <Button
-        onClick={() => { navigate("create") }
+        onClick={() => { navigate("/events/create") }
         }>
         Create Event
       </Button>
+      <Button
+        onClick={() => { navigate("/myEvents") }
+        }>
+        My Events
+      </Button>
 
-      {events.map((event) => {
-        return (
-          <>
-          event
-          <SingleEvent data={event.data} />
-          </>
-        )
-      })}
+      <div style={{display: 'flex', flexWrap:"wrap", width: '70%', margin: 'auto'}}>
+        {events.map((event) => {
+          return (
+            <>
+              <SingleEvent data={event} onClick={() => { console.log("hello"); navigate(`/events/${event._id}`) }} />
+            </>
+          )
+        })}
+      </div>
     </>
   )
 }

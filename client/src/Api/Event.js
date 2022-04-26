@@ -4,7 +4,10 @@ export const getAllEvents = async () => {
     const res = await getRequest("events");
     return res;
 }
-
+export const getMyEvents = async () => {
+    const res = await getRequest("events/myEvents");
+    return res;
+}
 export const CreateEvent = async (data) => {
     const res = await axiosRequest("POST", "events", {
         name: data.get("name"),
@@ -16,4 +19,16 @@ export const CreateEvent = async (data) => {
         image: data.get("image")
     });
     return res;
+}
+
+export const EventDetails = async (id) => {
+    return await getRequest(`events/${id}`);
+}
+
+export const EnrollEvent = async (id) => {
+    return await getRequest(`events/${id}/enroll`);
+}
+
+export const DeleteEvent = async (id) => {
+    return await getRequest(`events/${id}`);
 }

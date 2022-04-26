@@ -69,13 +69,12 @@ userRouter.route('/register/verify')
 
 		//check if user exists in temporary db
 		const userVerify = await UserVerify.findOne({ email: email }).exec();
-		if (userVerify == null) {
+		if (userVerify === null) {
 			res.status(404).json({
 				"msg": "User not found"
 			});
 			return;
 		}
-
 		//check if otp is correct
 		if (otp !== userVerify.otp) {
 			res.status(401).json({ "msg": "OTP is incorrect" });
@@ -95,6 +94,13 @@ userRouter.route('/register/verify')
 userRouter.route("/register/create")
 	.post(async (req, res) => {
 		const { name, email, password, institute } = req.body;
+		if (!name || !email || !password || !institute) {
+			res.status(400).json({
+				"msg": "Please provide all the details",
+				"status": 400
+			});
+			return;
+		}
 		//check if this email is verified 
 		const userVerify = await UserVerify.findOne({ email: email }).exec();
 		if (userVerify === null || userVerify.verified === false) {

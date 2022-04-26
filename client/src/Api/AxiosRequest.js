@@ -25,5 +25,5 @@ export const getRequest = async (url) => {
             Authorization: localStorage.getItem("token")
         }
     });
-    return response.json(); // parses JSON response into native JavaScript objects
+    return await response.json(); // parses JSON response into native JavaScript objects
 }

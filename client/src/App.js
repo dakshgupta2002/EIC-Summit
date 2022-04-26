@@ -8,13 +8,13 @@ import Error from "./Components/pages/Error";
 import Verify from "./Components/User/Verify";
 import Create from "./Components/User/Create";
 import EventCreate from './Components/Events/EventCreate';
+import { ToastContainer } from "react-toastify";
+import EventDetail from './Components/Events/EventDetail';
 
 function App() {
-
-
   return (
     <>
-
+      <ToastContainer/>
       <Router>
         <Routes>
           <Route exact path="/login" element={<Login />} />
@@ -24,14 +24,13 @@ function App() {
 
           <Route exact path="/" element={<Home />} />
           <Route exact path="events" element={<Events />} />
+          <Route path="/myEvents" element={<Events />} />
           <Route exact path="events/create" element={<EventCreate />} />
-
+          <Route path = "events/:id" element={<EventDetail/>} />
 
 
           <Route path="*" element={<Error />} />
-
         </Routes>
-
       </Router>
 
     </>

@@ -8,3 +8,5 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+
+//https://coggle.it/diagram/YjHXVOwvuAnxjkJQ/t/-

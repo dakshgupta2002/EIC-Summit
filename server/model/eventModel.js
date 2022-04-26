@@ -3,14 +3,12 @@ const { Schema } = mongoose
 
 const EventSchema = new Schema({
     host: {
-        required: true,
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        type: Schema.Types.ObjectId,    
+        ref: "User"
     },
     name: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     description: {
         type: String,
@@ -37,13 +35,20 @@ const EventSchema = new Schema({
     likes:{
         type: Number,
         default: 0
-    },
-    qrscan:{
-        type: String
     }
 }, {
     timestamps: true
 })
 
+// trigger: "AFTER INSERT" of new event
+// called middleware in NoSQL
+EventSchema.post('save', ()=>{
+    console.log('Event has been saved')
+});
+
+//create scheduled trigger 
+//create explore page for events
+
+//comment schema in the end 
 const Event = mongoose.model("Event", EventSchema);
 export default Event;
